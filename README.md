@@ -36,8 +36,6 @@
 | **Linting & Formatting** | ESLint, Prettier               |
 | **Git Hooks**            | Husky, Commitlint, lint-staged |
 
----
-
 ## 📂 프로젝트 구조
 
 ```bash
@@ -49,8 +47,6 @@
 ├── test/             # E2E tests
 └── ...
 ```
-
----
 
 ## 🚀 시작하기
 
@@ -90,8 +86,6 @@ API 문서는 [http://localhost:3000/docs](http://localhost:3000/docs)에서 확
 ## 📝 협업 가이드
 
 팀원들과 함께 사용할 협업 규칙 및 컨벤션입니다.
-
----
 
 ## 1. 브랜치 전략 (Git Flow)
 
@@ -133,8 +127,6 @@ fix/#34-api-error-handling
    ↓
 6. PR 생성 (작업 브랜치 → develop)
 ```
-
----
 
 ## 2. 커밋 컨벤션 (Conventional Commits)
 
@@ -191,8 +183,6 @@ type: subject
 ❌ feat: add login, fix db connection, update config (여러 작업 혼재)
 ```
 
----
-
 ## 3. PR(Pull Request) 전략
 
 > PR 템플릿이 설정되어 있습니다. 내용을 충실히 작성해주세요.
@@ -230,8 +220,6 @@ type: 요약 #이슈번호
   - `/gemini review` - 새로운 리뷰 요청
   - `/gemini summary` - 변경 사항 요약 요청
 
----
-
 ## 4. 코딩 & 스타일 컨벤션
 
 ### 자동 검사 도구
@@ -256,8 +244,6 @@ type: 요약 #이슈번호
 3. **주석은 Why, not What**: 코드가 무엇을 하는지보다 왜 그렇게 했는지 설명
 4. **Early Return 패턴 사용**: 중첩 if문보다는 조기 반환
 
----
-
 ## 5. CI/CD (Github Actions)
 
 ### 자동 실행 작업
@@ -278,8 +264,6 @@ PR 생성 및 푸시 시 자동으로 다음 작업이 실행됩니다:
 - **Commit-msg**: 커밋 메시지 규칙 검증
 
 규칙 위반 시 커밋이 중단되므로, 에러 메시지를 확인하여 수정 후 재시도하세요.
-
----
 
 ## 6. 스프린트 및 통합 주기 (Sprint & Integration)
 
@@ -361,5 +345,3 @@ git branch -d feat/#이슈번호-기능명
 1. `node_modules` 삭제 후 재설치: `rm -rf node_modules && pnpm install`
 2. `dist` 폴더 삭제 후 재빌드: `rm -rf dist && pnpm build`
 3. 환경 변수 확인: `.env` 파일 존재 및 내용 확인
-
----
