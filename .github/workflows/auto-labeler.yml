@@ -1,7 +1,7 @@
 name: Auto Labeler
 
 on:
-  pull_request_target:
+  pull_request: # 테스트를 위해 pull_request_target 대신 pull_request 사용
     types: [opened, reopened, edited]
 
 jobs:
@@ -16,6 +16,7 @@ jobs:
         with:
           script: |
             const title = context.payload.pull_request.title.toLowerCase();
+            const prNumber = context.payload.pull_request.number;
             const labels = [];
 
             const rules = {
@@ -39,7 +40,10 @@ jobs:
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: context.issue.number,
+                issue_number: prNumber,
                 labels: labels
               });
+              console.log(`Added labels ${labels} to PR #${prNumber}`);
+            } else {
+              console.log(`No matching labels found for title: "${title}"`);
             }
