@@ -14,9 +14,23 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            github.rest.issues.addAssignees({
+            // 1. Assign the PR creator
+            await github.rest.issues.addAssignees({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
               assignees: [context.payload.pull_request.user.login]
-            })
+            });
+
+            // 2. Request Review from Gemini Code Assist Bot
+            // Note: Ensure the 'Gemini Code Assist' app is installed in the repository.
+            try {
+              await github.rest.pulls.requestReviewers({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.issue.number,
+                reviewers: ['gemini-code-assist[bot]']
+              });
+            } catch (error) {
+              console.log("Failed to request review from gemini-code-assist[bot]. Ensure the App is installed.");
+            }
