@@ -6,7 +6,7 @@ on:
       - main
       - develop
     paths:
-      - '.github/labels.json'
+      - '.github/labels.yml'
   workflow_dispatch:
 
 jobs:
@@ -23,5 +23,5 @@ jobs:
       - name: Sync Labels
         uses: crazy-max/ghaction-github-labeler@v5
         with:
-          yaml-file: .github/labels.json
+          yaml-file: .github/labels.yml
           dry-run: false
