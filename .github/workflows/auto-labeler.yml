@@ -2,7 +2,7 @@ name: Auto Labeler
 
 on:
   pull_request: # 테스트를 위해 pull_request_target 대신 pull_request 사용
-    types: [opened, reopened, edited]
+    types: [opened, reopened, edited, synchronize]
 
 jobs:
   label:
