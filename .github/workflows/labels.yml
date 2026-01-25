@@ -13,6 +13,7 @@ jobs:
   labels:
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       issues: write
       pull-requests: write
     steps:
@@ -22,5 +23,5 @@ jobs:
       - name: Sync Labels
         uses: crazy-max/ghaction-github-labeler@v5
         with:
-          filename: .github/labels.json
+          yaml-file: .github/labels.json
           dry-run: false

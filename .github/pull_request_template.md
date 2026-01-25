@@ -1,17 +1,27 @@
 ## PR 체크리스트
 
+> [!TIP]
+> 자세한 협업 규칙 및 컨벤션은 [README 가이드라인](https://github.com/team-walker/backend#-team-collaboration-guidelines)을 참고해 주세요!
+
 **✅ 아래 규칙 한번더 확인해 주세요~!**
 
 - [ ] 커밋 메시지 규칙 준수 (Conventional Commits: `feat:`, `fix:` 등)
 - [ ] 불필요한 `console.log` 및 주석 제거 완료
-- [ ] PR 제목 형식 준수 (예: `[FEAT] API 명세서 설정 추가 #12`)
+- [ ] PR 제목 형식 준수 (예: `feat: API 명세서 설정 추가 #12`)
+- [ ] **Assignees 설정**: 본인이 담당자로 잘 지정되었는지 확인해 주세요.
+- [ ] **Reviewers 설정**: 팀원 전원 + AI reviewer (자동 지정 완료!)
+- [ ] **AI 코드 리뷰 확인**: Gemini Code Assist의 1차 리뷰를 확인했나요? (자동 지정 완료!)
+- [ ] **Labels 설정**: PR 제목에 맞춰 `feat`, `fix` 등 라벨이 잘 달렸나요?
+- [ ] **관련 이슈 연결**: 본문에 `Close #이슈번호`를 적어 이슈를 연결해 주세요
+- [ ] **셀프 코드 리뷰 & 리뷰 요청**: 셀프 리뷰를 마친 후, `ready for review` 라벨을 달고 필요 시 팀원을 @멘션해 주세요!
 
-**✅ 아래 항목을 충족하는지 확인해 주세요~!**
+---
 
-- [ ] Reviewers 설정 (팀원 전원)
-- [ ] Assignees 본인으로 설정
-- [ ] Labels 설정 (`feat`, `fix`, `refactor` 등)
-- [ ] 관련 이슈(Issue) 연결 완료 (`Close #이슈번호`)
+## 관련 이슈
+
+<!-- 이슈 번호를 적어주세요. 예: Close #12 -->
+
+- Close #이슈번호
 
 ## 작업 개요
 
@@ -25,11 +35,19 @@
 
 -
 
+## 리뷰어에게 전달할 포인트
+
+<!-- 리뷰어가 특히 중점적으로 봐주었으면 하는 부분이나, 구현하면서 고민했던 내용을 적어주세요 -->
+
+-
+
 ## 테스트 결과
 
 <!-- 테스트 코드 통과 여부나 Swagger/Postman 실행 결과를 작성해 주세요 -->
 
 - [ ] 단위 테스트(Unit Test) 통과 여부
+- [ ] E2E 테스트(E2E Test) 통과 여부
+- [ ] 린트 및 빌드 체크(Lint & Build Check) 완료
 - [ ] API 응답 확인 (Swagger/Localhost)
 
 ## (선택) 스크린샷 및 참고 자료

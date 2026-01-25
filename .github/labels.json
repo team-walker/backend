@@ -53,5 +53,10 @@
     "name": "stale",
     "color": "636363",
     "description": "💤 활동이 없는 이슈/PR"
+  },
+  {
+    "name": "ready for review",
+    "color": "0e8a16",
+    "description": "📦 셀프 리뷰 완료 및 리뷰 요청 상태"
   }
 ]
