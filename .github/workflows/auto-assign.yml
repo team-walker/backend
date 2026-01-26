@@ -8,6 +8,7 @@ jobs:
   assign:
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       pull-requests: write
       issues: write
     steps:
@@ -21,12 +22,16 @@ jobs:
           script: |
             const fs = require('fs');
             const creator = context.payload.pull_request.user.login;
-
-            // 1. Read team members from CODEOWNERS
+            // 1. CODEOWNERS 읽기 및 유저 추출
             const content = fs.readFileSync('.github/CODEOWNERS', 'utf8');
-            const teamMembers = [...new Set(content.match(/@[\w-]+/g).map(m => m.replace('@', '')))];
+            const matches = content.match(/@[\w-]+/g);
 
-            // 2. Assign the PR creator
+            // 유저가 없을 경우를 대비한 안전장치
+            const teamMembers = matches 
+              ? [...new Set(matches.map(m => m.replace('@', '')))]
+              : [];
+            console.log(`Detected team members: ${teamMembers.join(', ')}`);
+            // 2. 담당자 지정 (Assignee)
             await github.rest.issues.addAssignees({
               owner: context.repo.owner,
               repo: context.repo.repo,
