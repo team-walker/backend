@@ -11,6 +11,10 @@ jobs:
       pull-requests: write
       issues: write
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: 'Auto PR Assignment & Reviewer Request'
         uses: actions/github-script@v7
         with:
@@ -29,11 +33,11 @@ jobs:
               issue_number: context.issue.number,
               assignees: [creator]
             });
-
-            // 3. Request Review from Team & Gemini Bot
+            // 3. 리뷰어 요청 (Reviewers)
+            // 본인 제외 + Gemini 봇 추가
             const reviewers = teamMembers.filter(member => member !== creator);
             reviewers.push('gemini-code-assist[bot]');
-
+            console.log(`Requesting review from: ${reviewers.join(', ')}`);
             try {
               await github.rest.pulls.requestReviewers({
                 owner: context.repo.owner,
@@ -42,5 +46,5 @@ jobs:
                 reviewers: reviewers
               });
             } catch (error) {
-              console.log("Failed to request reviewers. Error: " + error.message);
+              console.log("Reviewer request failed. This usually happens if a user is not a collaborator. Error: " + error.message);
             }
