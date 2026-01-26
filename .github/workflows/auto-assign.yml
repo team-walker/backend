@@ -1,7 +1,7 @@
 name: Auto Assignment
 
 on:
-  pull_request_target:
+  pull_request: # PR 브랜치의 코드를 테스트하기 위해 임시로 pull_request 사용
     types: [opened, reopened, synchronize]
 
 jobs:
