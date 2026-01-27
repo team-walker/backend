@@ -8,4 +8,10 @@ export class HelloController {
       message: 'Hello World!',
     };
   }
+  @Get('time')
+  getTime() {
+    return {
+      time: new Date().toISOString(),
+    };
+  }
 }
