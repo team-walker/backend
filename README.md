@@ -138,8 +138,11 @@ fix/#34-api-error-handling
 type: subject
 ```
 
-- **모두 소문자로 작성** (대문자 사용 불가)
+- **`type`은 필수이며 소문자로 작성**
+- **`subject`는 대소문자 구분 없이 작성 가능** (API, UI 등 고유명사 사용 가능)
 - `type`과 `subject` 사이에 콜론(`:`)과 공백 한 칸
+- 제목 끝에 **마침표(`.`) 사용 가능** (선택 사항)
+- **본문(body) 최대 200자**까지 작성 가능 (유연한 설명 기재 가능)
 
 ### Type 종류
 
@@ -152,6 +155,10 @@ type: subject
 | `refactor` | 코드 리팩토링 (기능 변경 없음)                 | `refactor: simplify user validation logic` |
 | `test`     | 테스트 코드 추가/수정                          | `test: add unit tests for auth service`    |
 | `chore`    | 빌드 업무, 패키지 매니저 설정 등               | `chore: update dependencies`               |
+| `perf`     | 성능 개선                                      | `perf: optimize database queries`          |
+| `ci`       | CI 구성 파일 및 스크립트 변경                  | `ci: update github actions workflow`       |
+| `init`     | 프로젝트 초기 생성                             | `init: create project structure`           |
+| `revert`   | 커밋 되돌리기                                  | `revert: undo previous commit`             |
 
 ### 커밋 단위 (Atomic Commit)
 
@@ -177,7 +184,7 @@ type: subject
 ### 나쁜 커밋 예시
 
 ```bash
-❌ Feat: Add Login (대문자 사용)
+❌ FEAT: add login (type을 대문자로 작성)
 ❌ feat:add login (공백 없음)
 ❌ add login (type 누락)
 ❌ feat: add login, fix db connection, update config (여러 작업 혼재)
@@ -331,7 +338,10 @@ git branch -d feat/#이슈번호-기능명
 
 1. 린트 에러 확인: `pnpm lint`
 2. 포맷팅 자동 수정: `pnpm format`
-3. 커밋 메시지 형식 확인 (소문자, type: subject)
+3. 커밋 메시지 형식 확인
+   - `type`은 반드시 소문자 (예: `feat:`, `fix:`)
+   - `type` 뒤 콜론(`:`)과 **공백 한 칸** 필수
+   - `subject`는 대문자/마침표 포함 가능
 
 #### 충돌(Conflict) 발생 시
 
