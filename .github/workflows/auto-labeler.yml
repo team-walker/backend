@@ -27,7 +27,10 @@ jobs:
               'refactor': /^refactor:|^refactor\(/,
               'test': /^test:|^test\(/,
               'chore': /^chore:|^chore\(/,
-              'design': /^design:|^design\(/
+              'design': /^design:|^design\(/,
+              'perf': /^perf:|^perf\(/,
+              'ci': /^ci:|^ci\(/,
+              'init': /^init:|^init\(/,
             };
 
             for (const [label, regex] of Object.entries(rules)) {
