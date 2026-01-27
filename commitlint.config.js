@@ -10,7 +10,7 @@ module.exports = {
     'subject-full-stop': [0, 'never', '.'],
 
     // 본문 최대 길이 제한 늘리기 (기본 100자는 너무 짧을 수 있음)
-    'body-max-line-length': [0, 'always', 200],
+    'body-max-line-length': [2, 'always', 200],
 
     // 타입(feat, fix 등)은 중요하므로 강제
     'type-enum': [
