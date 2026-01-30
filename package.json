@@ -82,5 +82,10 @@
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   },
-  "packageManager": "pnpm@8.5.0+sha1.83c41fe4ebdb61e08446f8bb68a75fb48756b330"
+  "packageManager": "pnpm@8.5.0+sha1.83c41fe4ebdb61e08446f8bb68a75fb48756b330",
+  "pnpm": {
+    "overrides": {
+      "lodash": "^4.17.23"
+    }
+  }
 }
