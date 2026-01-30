@@ -2,9 +2,11 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
+import { Database } from '../database.types';
+
 @Injectable()
 export class SupabaseService implements OnModuleInit {
-  private supabase: SupabaseClient;
+  private supabase: SupabaseClient<Database>;
 
   constructor(private configService: ConfigService) {}
 
@@ -16,11 +18,10 @@ export class SupabaseService implements OnModuleInit {
       throw new Error('Supabase URL and Key must be provided in .env');
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    this.supabase = createClient<any, 'public', 'public'>(supabaseUrl, supabaseKey);
+    this.supabase = createClient<Database>(supabaseUrl, supabaseKey);
   }
 
-  getClient(): SupabaseClient {
+  getClient(): SupabaseClient<Database> {
     return this.supabase;
   }
 }

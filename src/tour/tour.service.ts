@@ -1,8 +1,10 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { SupabaseClient } from '@supabase/supabase-js';
 import { firstValueFrom } from 'rxjs';
 
+import { Database } from '../database.types';
 import { SupabaseService } from '../supabase/supabase.service';
 import { SyncTourDataResponseDto } from './dto/sync-tour-data.dto';
 import { LandmarkEntity } from './interfaces/landmark.interface';
@@ -50,7 +52,7 @@ export class TourService {
 
       this.logger.log(`Fetched ${items.length} items. Inserting into Supabase...`);
 
-      const supabase = this.supabaseService.getClient();
+      const supabase = this.supabaseService.getClient() as unknown as SupabaseClient<Database>;
 
       // Transform items to match your Supabase table schema
       const records: LandmarkEntity[] = items.map((item) => {
@@ -90,12 +92,14 @@ export class TourService {
       });
 
       // Upsert data to avoid duplicates (assuming contentid is unique content)
+
       const { error } = await supabase
         .from('landmark')
         .upsert(records, { onConflict: 'contentid' });
 
       if (error) {
         this.logger.error(`Supabase error: ${error.message}`);
+
         throw new Error(error.message);
       }
 

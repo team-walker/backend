@@ -1,0 +1,104 @@
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+
+export interface Database {
+  public: {
+    Tables: {
+      landmark: {
+        Row: {
+          contentid: number;
+          contenttypeid: number | null;
+          title: string;
+          addr1: string | null;
+          addr2: string | null;
+          zipcode: string | null;
+          tel: string | null;
+          areacode: number | null;
+          sigungucode: number | null;
+          cat1: string | null;
+          cat2: string | null;
+          cat3: string | null;
+          mapx: number | null;
+          mapy: number | null;
+          mlevel: number | null;
+          firstimage: string | null;
+          firstimage2: string | null;
+          cpyrhtdivcd: string | null;
+          createdtime: string | null;
+          modifiedtime: string | null;
+          ldongregncd: number | null;
+          ldongsigngucd: number | null;
+          lclssystm1: string | null;
+          lclssystm2: string | null;
+          lclssystm3: string | null;
+        };
+        Insert: {
+          contentid: number;
+          contenttypeid?: number | null;
+          title: string;
+          addr1?: string | null;
+          addr2?: string | null;
+          zipcode?: string | null;
+          tel?: string | null;
+          areacode?: number | null;
+          sigungucode?: number | null;
+          cat1?: string | null;
+          cat2?: string | null;
+          cat3?: string | null;
+          mapx?: number | null;
+          mapy?: number | null;
+          mlevel?: number | null;
+          firstimage?: string | null;
+          firstimage2?: string | null;
+          cpyrhtdivcd?: string | null;
+          createdtime?: string | null;
+          modifiedtime?: string | null;
+          ldongregncd?: number | null;
+          ldongsigngucd?: number | null;
+          lclssystm1?: string | null;
+          lclssystm2?: string | null;
+          lclssystm3?: string | null;
+        };
+        Update: {
+          contentid?: number;
+          contenttypeid?: number | null;
+          title?: string;
+          addr1?: string | null;
+          addr2?: string | null;
+          zipcode?: string | null;
+          tel?: string | null;
+          areacode?: number | null;
+          sigungucode?: number | null;
+          cat1?: string | null;
+          cat2?: string | null;
+          cat3?: string | null;
+          mapx?: number | null;
+          mapy?: number | null;
+          mlevel?: number | null;
+          firstimage?: string | null;
+          firstimage2?: string | null;
+          cpyrhtdivcd?: string | null;
+          createdtime?: string | null;
+          modifiedtime?: string | null;
+          ldongregncd?: number | null;
+          ldongsigngucd?: number | null;
+          lclssystm1?: string | null;
+          lclssystm2?: string | null;
+          lclssystm3?: string | null;
+        };
+        Relationships: [];
+      };
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      [_ in never]: never;
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
+  };
+}
