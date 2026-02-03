@@ -21,6 +21,7 @@ export class TourService {
     private readonly configService: ConfigService,
   ) {}
 
+  // PR 업데이트용 주석 추가
   // 매주 월요일 자정에 실행 (Week start set to Monday for automatic sync)
   @Cron(CronExpression.EVERY_WEEK)
   async handleWeeklySync() {
@@ -119,5 +120,4 @@ export class TourService {
       throw error;
     }
   }
-  // TEST
 }
