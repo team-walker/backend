@@ -19,6 +19,8 @@ import { LandmarkMapper } from './utils/landmark.mapper';
 @Injectable()
 export class TourApiService {
   private readonly logger = new Logger(TourApiService.name);
+  private readonly DEFAULT_NUM_OF_ROWS = 800;
+  private readonly PAGE_DELAY = 200;
 
   constructor(
     private readonly httpService: HttpService,
@@ -28,7 +30,7 @@ export class TourApiService {
   /**
    * 한국관광공사 API에서 전체 관광지 목록을 페이지네이션하여 모두 가져옴
    */
-  async fetchTourItems(numOfRows = 800): Promise<LandmarkEntity[]> {
+  async fetchTourItems(numOfRows = this.DEFAULT_NUM_OF_ROWS): Promise<LandmarkEntity[]> {
     const allItems: LandmarkEntity[] = [];
     let pageNo = 1;
 
@@ -46,7 +48,7 @@ export class TourApiService {
 
       // 2. 나머지 페이지 순회
       for (pageNo = 2; pageNo <= totalPages; pageNo++) {
-        await new Promise((resolve) => setTimeout(resolve, 200)); // Rate limit 방지
+        await new Promise((resolve) => setTimeout(resolve, this.PAGE_DELAY)); // Rate limit 방지
         const { items: pageItems } = await this.fetchTourItemsByPage(pageNo, numOfRows);
         allItems.push(...pageItems);
       }

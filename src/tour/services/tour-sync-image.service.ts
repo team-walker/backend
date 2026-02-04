@@ -7,6 +7,8 @@ import { TourApiService } from '../tour-api.service';
 @Injectable()
 export class TourSyncImageService {
   private readonly logger = new Logger(TourSyncImageService.name);
+  private readonly BATCH_SIZE = 50;
+  private readonly API_DELAY = 200;
 
   constructor(
     private readonly tourApiService: TourApiService,
@@ -56,7 +58,6 @@ export class TourSyncImageService {
     }
 
     // 4. Process sequentially
-    const BATCH_SIZE = 50;
     let currentBatch: LandmarkImageEntity[] = [];
     let processedCount = 0;
     let landmarkIndex = 0;
@@ -78,9 +79,9 @@ export class TourSyncImageService {
         this.logger.log(`No images found for contentid: ${landmark.contentid}`);
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      await new Promise((resolve) => setTimeout(resolve, this.API_DELAY));
 
-      if (currentBatch.length >= BATCH_SIZE) {
+      if (currentBatch.length >= this.BATCH_SIZE) {
         this.logger.log(`Upserting batch of ${currentBatch.length} images...`);
         await this.upsertBatch(currentBatch);
         processedCount += currentBatch.length;

@@ -61,16 +61,17 @@ CREATE TABLE public.landmark_detail (
   CONSTRAINT landmark_detail_contentid_fk FOREIGN KEY (contentid) REFERENCES public.landmark(contentid)
 );
 CREATE TABLE public.landmark_image (
-  id integer NOT NULL DEFAULT nextval('landmark_image_id_seq'::regclass),
-  contentid bigint NOT NULL,
-  originimgurl text NOT NULL,
-  imgname text NOT NULL,
-  smallimageurl text,
-  cpyrhtdivcd character varying,
-  serialnum character varying,
-  CONSTRAINT landmark_image_pkey PRIMARY KEY (id),
-  CONSTRAINT landmark_image_contentid_fk FOREIGN KEY (contentid) REFERENCES public.landmark(contentid)
-);
+  id serial not null,
+  contentid bigint not null,
+  originimgurl text not null,
+  imgname text not null,
+  smallimageurl text null,
+  cpyrhtdivcd character varying(10) null,
+  serialnum character varying(20) null,
+  constraint landmark_image_pkey primary key (id),
+  constraint landmark_image_contentid_serialnum_unique unique (contentid, serialnum),
+  constraint landmark_image_contentid_fk foreign KEY (contentid) references landmark (contentid) on delete CASCADE
+) TABLESPACE pg_default;
 CREATE TABLE public.landmark_intro (
   id integer NOT NULL DEFAULT nextval('landmark_intro_id_seq'::regclass),
   contentid bigint NOT NULL UNIQUE,

@@ -30,7 +30,7 @@ dependencies:
     specifier: ^2.93.3
     version: 2.93.3
   axios:
-    specifier: ^1.13.4
+    specifier: ^1.7.2
     version: 1.13.4
   reflect-metadata:
     specifier: ^0.2.2
