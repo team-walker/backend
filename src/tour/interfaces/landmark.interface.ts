@@ -25,3 +25,8 @@ export interface LandmarkEntity {
   lclssystm2: string | null;
   lclssystm3: string | null;
 }
+
+export interface LandmarkDetailEntity extends LandmarkEntity {
+  homepage: string | null;
+  overview: string | null;
+}
