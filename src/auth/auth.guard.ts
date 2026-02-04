@@ -13,7 +13,7 @@ export class AuthGuard implements CanActivate {
     const serviceKey = this.configService.get<string>('SUPABASE_SERVICE_ROLE_KEY');
 
     if (!url || !serviceKey) {
-      throw new InternalServerErrorException('Supabase 환경 변수가 설정되지 않았습니다.');
+      throw new Error('SUPABASE 환경변수 없음');
     }
 
     this.supabase = createClient(url, serviceKey);
