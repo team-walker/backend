@@ -18,10 +18,12 @@ export class TourController {
 
   @Post('sync/detail')
   async syncTourDetail() {
-    await this.tourService.syncLandmarkDetails();
+    const updatedIds = await this.tourService.syncLandmarkDetails();
     return {
       success: true,
       message: 'Landmark details synchronization completed',
+      updatedCount: updatedIds.length,
+      updatedIds,
     };
   }
 

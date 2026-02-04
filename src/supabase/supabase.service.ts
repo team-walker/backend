@@ -11,12 +11,8 @@ export class SupabaseService implements OnModuleInit {
   constructor(private configService: ConfigService) {}
 
   onModuleInit() {
-    const supabaseUrl = this.configService.get<string>('SUPABASE_URL') ?? '';
-    const supabaseKey = this.configService.get<string>('SUPABASE_SERVICE_ROLE_KEY') ?? '';
-
-    if (!supabaseUrl || !supabaseKey) {
-      throw new Error('Supabase URL and Key must be provided in .env');
-    }
+    const supabaseUrl = this.configService.getOrThrow<string>('SUPABASE_URL');
+    const supabaseKey = this.configService.getOrThrow<string>('SUPABASE_SERVICE_ROLE_KEY');
 
     this.supabase = createClient<Database>(supabaseUrl, supabaseKey);
   }

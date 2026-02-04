@@ -57,7 +57,8 @@ CREATE TABLE public.landmark_detail (
   lclssystm3 character varying,
   homepage text,
   overview text,
-  CONSTRAINT landmark_detail_pkey PRIMARY KEY (contentid)
+  CONSTRAINT landmark_detail_pkey PRIMARY KEY (contentid),
+  CONSTRAINT landmark_detail_contentid_fk FOREIGN KEY (contentid) REFERENCES public.landmark(contentid)
 );
 CREATE TABLE public.landmark_image (
   id integer NOT NULL DEFAULT nextval('landmark_image_id_seq'::regclass),

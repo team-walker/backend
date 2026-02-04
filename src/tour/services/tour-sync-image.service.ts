@@ -67,11 +67,6 @@ export class TourSyncImageService {
         `[${landmarkIndex}/${toSync.length}] Fetching images for contentid: ${landmark.contentid}${isForced ? ' (Forced Update)' : ''}`,
       );
 
-      // 데이터 중복 방지: 강제 업데이트이거나 이미 데이터가 존재할 수 있는 경우 삭제 후 재등록
-      if (isForced || existingIds.has(landmark.contentid)) {
-        await supabase.from('landmark_image').delete().eq('contentid', landmark.contentid);
-      }
-
       const images = await this.tourApiService.fetchLandmarkImages(landmark.contentid);
 
       if (images.length > 0) {
@@ -103,9 +98,9 @@ export class TourSyncImageService {
 
   private async upsertBatch(batch: LandmarkImageEntity[]) {
     const supabase = this.supabaseService.getClient();
-    // NOTE: 'onConflict' might need adjustment based on table constraints for images
-    // Usually images are unique by (contentid, serialnum) or just serialnum if global
-    const { error: upsertError } = await supabase.from('landmark_image').upsert(batch);
+    const { error: upsertError } = await supabase
+      .from('landmark_image')
+      .upsert(batch, { onConflict: 'contentid,serialnum' });
 
     if (upsertError) {
       this.logger.error(`Error upserting images: ${upsertError.message}`);

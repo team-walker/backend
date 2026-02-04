@@ -15,7 +15,7 @@ describe('SupabaseService', () => {
           useValue: {
             get: jest.fn((key: string) => {
               if (key === 'SUPABASE_URL') return 'https://example.supabase.co';
-              if (key === 'SUPABASE_PUBLISHABLE_API_KEY') return 'some-key';
+              if (key === 'SUPABASE_SERVICE_ROLE_KEY') return 'some-key';
               return null;
             }),
           },

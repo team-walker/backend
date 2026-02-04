@@ -41,16 +41,12 @@ export class TourSyncDetailService {
 
       // 상세 정보가 원본 테이블(landmark)보다 오래되었거나 없는 경우 업데이트 대상
       if (!detailModifiedTime) {
-        // console.log(`[LandmarkDetail] ContentID ${l.contentid}: New item (no existing detail)`);
         return true;
       }
 
       if (!l.modifiedtime) return false;
 
       const isChanged = new Date(l.modifiedtime) > new Date(detailModifiedTime);
-      if (isChanged) {
-        // console.log(`[LandmarkDetail] ContentID ${l.contentid}: Content core was updated (${detailModifiedTime} -> ${l.modifiedtime})`);
-      }
       return isChanged;
     });
 

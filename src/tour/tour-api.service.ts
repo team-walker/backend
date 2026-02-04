@@ -38,12 +38,14 @@ export class TourApiService {
       const response = await firstValueFrom(this.httpService.get<TourApiResponse>(url));
       const { data } = response;
 
-      const items = data?.response?.body?.items?.item;
+      const rawItems = data?.response?.body?.items?.item;
 
-      if (!items || !Array.isArray(items)) {
-        this.logger.warn('No items found or invalid data structure');
+      if (!rawItems) {
+        this.logger.warn('No items found');
         return [];
       }
+
+      const items = Array.isArray(rawItems) ? rawItems : [rawItems];
 
       return items.map((item: TourApiItem) => LandmarkMapper.toLandmarkEntity(item));
     } catch (e) {
