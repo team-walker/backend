@@ -1,7 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { SupabaseClient } from '@supabase/supabase-js';
 
-import { Database } from '../../database.types';
 import { SupabaseService } from '../../supabase/supabase.service';
 import { LandmarkIntroEntity } from '../interfaces/landmark-intro.interface';
 import { TourApiService } from '../tour-api.service';
@@ -20,7 +18,7 @@ export class TourSyncIntroService {
    * @param forceUpdateIds 강제로 업데이트할 contentid 목록 (변경된 정보 등)
    */
   async sync(forceUpdateIds: number[] = []) {
-    const supabase = this.supabaseService.getClient() as unknown as SupabaseClient<Database>;
+    const supabase = this.supabaseService.getClient();
 
     // 1. 이미 소개 정보가 있는 contentid 목록 조회
     const { data: existingIntros } = await supabase.from('landmark_intro').select('contentid');
@@ -98,7 +96,7 @@ export class TourSyncIntroService {
   }
 
   private async upsertBatch(batch: LandmarkIntroEntity[]) {
-    const supabase = this.supabaseService.getClient() as unknown as SupabaseClient<Database>;
+    const supabase = this.supabaseService.getClient();
     const { error: upsertError } = await supabase
       .from('landmark_intro')
       .upsert(batch, { onConflict: 'contentid' });

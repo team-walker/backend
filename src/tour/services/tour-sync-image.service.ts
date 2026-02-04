@@ -1,7 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { SupabaseClient } from '@supabase/supabase-js';
 
-import { Database } from '../../database.types';
 import { SupabaseService } from '../../supabase/supabase.service';
 import { LandmarkImageEntity } from '../interfaces/landmark-image.interface';
 import { TourApiService } from '../tour-api.service';
@@ -20,7 +18,7 @@ export class TourSyncImageService {
    * @param forceUpdateIds 강제로 업데이트할 contentid 목록 (변경된 정보 등)
    */
   async sync(forceUpdateIds: number[] = []) {
-    const supabase = this.supabaseService.getClient() as unknown as SupabaseClient<Database>;
+    const supabase = this.supabaseService.getClient();
 
     // 1. 이미 이미지가 저장된 contentid 목록 조회 (중복 제거)
     const { data: existingImages } = await supabase.from('landmark_image').select('contentid');
@@ -69,6 +67,11 @@ export class TourSyncImageService {
         `[${landmarkIndex}/${toSync.length}] Fetching images for contentid: ${landmark.contentid}${isForced ? ' (Forced Update)' : ''}`,
       );
 
+      // 데이터 중복 방지: 강제 업데이트이거나 이미 데이터가 존재할 수 있는 경우 삭제 후 재등록
+      if (isForced || existingIds.has(landmark.contentid)) {
+        await supabase.from('landmark_image').delete().eq('contentid', landmark.contentid);
+      }
+
       const images = await this.tourApiService.fetchLandmarkImages(landmark.contentid);
 
       if (images.length > 0) {
@@ -99,7 +102,7 @@ export class TourSyncImageService {
   }
 
   private async upsertBatch(batch: LandmarkImageEntity[]) {
-    const supabase = this.supabaseService.getClient() as unknown as SupabaseClient<Database>;
+    const supabase = this.supabaseService.getClient();
     // NOTE: 'onConflict' might need adjustment based on table constraints for images
     // Usually images are unique by (contentid, serialnum) or just serialnum if global
     const { error: upsertError } = await supabase.from('landmark_image').upsert(batch);

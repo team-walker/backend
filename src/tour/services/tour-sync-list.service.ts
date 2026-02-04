@@ -1,7 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { SupabaseClient } from '@supabase/supabase-js';
 
-import { Database } from '../../database.types';
 import { SupabaseService } from '../../supabase/supabase.service';
 import { SyncTourDataResponseDto } from '../dto/sync-tour-data.dto';
 import { LandmarkEntity } from '../interfaces/landmark.interface';
@@ -32,7 +30,7 @@ export class TourSyncListService {
 
       this.logger.log(`Fetched ${records.length} items from API. Checking for updates...`);
 
-      const supabase = this.supabaseService.getClient() as unknown as SupabaseClient<Database>;
+      const supabase = this.supabaseService.getClient();
 
       // 1. DB에 저장된 현재 데이터의 modifiedtime 가져오기
       const { data: existingData, error: fetchError } = await supabase

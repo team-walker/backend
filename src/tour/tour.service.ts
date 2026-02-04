@@ -1,8 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { SupabaseClient } from '@supabase/supabase-js';
 
-import { Database } from '../database.types';
 import { SupabaseService } from '../supabase/supabase.service';
 import { TourSyncDetailService } from './services/tour-sync-detail.service';
 import { TourSyncImageService } from './services/tour-sync-image.service';
@@ -96,7 +94,7 @@ export class TourService {
    * DB에 저장된 모든 관광지 목록 조회
    */
   async getLandmarks() {
-    const supabase = this.supabaseService.getClient() as unknown as SupabaseClient<Database>;
+    const supabase = this.supabaseService.getClient();
 
     const { data, error } = await supabase.from('landmark').select('*');
 

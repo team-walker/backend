@@ -1,7 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { SupabaseClient } from '@supabase/supabase-js';
 
-import { Database } from '../../database.types';
 import { SupabaseService } from '../../supabase/supabase.service';
 import { LandmarkDetailEntity } from '../interfaces/landmark.interface';
 import { TourApiService } from '../tour-api.service';
@@ -19,7 +17,7 @@ export class TourSyncDetailService {
    * Phase 2: 관광지 상세 정보 동기화
    */
   async sync() {
-    const supabase = this.supabaseService.getClient() as unknown as SupabaseClient<Database>;
+    const supabase = this.supabaseService.getClient();
 
     // 1. 기본 정보(landmark)와 상세 정보(landmark_detail)의 수정 시각 비교
     const { data: allLandmarks, error: listError } = await supabase
@@ -109,7 +107,7 @@ export class TourSyncDetailService {
   }
 
   private async upsertBatch(batch: LandmarkDetailEntity[]) {
-    const supabase = this.supabaseService.getClient() as unknown as SupabaseClient<Database>;
+    const supabase = this.supabaseService.getClient();
     const { error: upsertError } = await supabase
       .from('landmark_detail')
       .upsert(batch, { onConflict: 'contentid' });
