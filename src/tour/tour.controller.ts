@@ -8,12 +8,12 @@ export class TourController {
 
   @Post('sync')
   async syncTourData() {
-    return this.tourService.syncAllTourData();
+    return await this.tourService.syncAllTourData();
   }
 
   @Post('sync/list')
   async syncTourList() {
-    return this.tourService.syncTourData();
+    return await this.tourService.syncTourData();
   }
 
   @Post('sync/detail')
@@ -45,6 +45,6 @@ export class TourController {
 
   @Get()
   async getTourData() {
-    return this.tourService.getLandmarks();
+    return await this.tourService.getLandmarks();
   }
 }
