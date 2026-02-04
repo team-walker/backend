@@ -26,7 +26,41 @@ export interface TourApiItem {
   lclsSystm3?: string;
 }
 
-export interface TourApiResponse {
+export interface TourApiDetailItem extends TourApiItem {
+  homepage?: string;
+  overview?: string;
+}
+
+export interface TourApiImageItem {
+  contentid: string;
+  originimgurl: string;
+  imgname: string;
+  smallimageurl: string;
+  cpyrhtDivCd: string;
+  serialnum: string;
+}
+
+export interface TourApiIntroItem {
+  contentid: string;
+  contenttypeid: string;
+  heritage1: string;
+  heritage2: string;
+  heritage3: string;
+  infocenter: string;
+  opendate: string;
+  restdate: string;
+  expguide: string;
+  expagerange: string;
+  accomcount: string;
+  useseason: string;
+  usetime: string;
+  parking: string;
+  chkbabycarriage: string;
+  chkpet: string;
+  chkcreditcard: string;
+}
+
+export interface TourApiResponse<T = TourApiItem> {
   response: {
     header: {
       resultCode: string;
@@ -34,11 +68,21 @@ export interface TourApiResponse {
     };
     body: {
       items: {
-        item: TourApiItem[];
+        item: T[] | T;
       };
       numOfRows: number;
       pageNo: number;
       totalCount: number;
+    };
+  };
+}
+
+export interface TourApiNullableResponse<T> {
+  response?: {
+    body?: {
+      items?: {
+        item?: T | T[];
+      };
     };
   };
 }

@@ -1,123 +1,110 @@
-import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { SupabaseClient } from '@supabase/supabase-js';
-import { firstValueFrom } from 'rxjs';
 
 import { Database } from '../database.types';
 import { SupabaseService } from '../supabase/supabase.service';
-import { SyncTourDataResponseDto } from './dto/sync-tour-data.dto';
-import { LandmarkEntity } from './interfaces/landmark.interface';
-import { TourApiItem, TourApiResponse } from './interfaces/tour-api-response.interface';
+import { TourSyncDetailService } from './services/tour-sync-detail.service';
+import { TourSyncImageService } from './services/tour-sync-image.service';
+import { TourSyncIntroService } from './services/tour-sync-intro.service';
+import { TourSyncListService } from './services/tour-sync-list.service';
 
 @Injectable()
 export class TourService {
   private readonly logger = new Logger(TourService.name);
 
   constructor(
-    private readonly httpService: HttpService,
     private readonly supabaseService: SupabaseService,
-    private readonly configService: ConfigService,
+    private readonly tourSyncListService: TourSyncListService,
+    private readonly tourSyncDetailService: TourSyncDetailService,
+    private readonly tourSyncImageService: TourSyncImageService,
+    private readonly tourSyncIntroService: TourSyncIntroService,
   ) {}
 
-  // PR 업데이트용 주석 추가
-  // 매주 월요일 자정에 실행 (Week start set to Monday for automatic sync)
+  /**
+   * 매주 월요일 자정에 실행되는 정기 데이터 동기화 작업
+   */
   @Cron(CronExpression.EVERY_WEEK)
   async handleWeeklySync() {
-    this.logger.log('Starting weekly tour data synchronization...');
+    await this.syncAllTourData();
+  }
+
+  /**
+   * 모든 단계의 관광 데이터를 순차적으로 동기화하는 메인 프로세스
+   * (목록 조회 -> 상세 정보 -> 이미지 -> 소개 정보)
+   */
+  async syncAllTourData() {
+    this.logger.log('Starting full tour data synchronization...');
     try {
-      const result = await this.syncTourData();
-      this.logger.log(`Weekly synchronization completed. Processed ${result.count} items.`);
+      const result = await this.tourSyncListService.sync();
+      this.logger.log(`Phase 1: List synchronization completed. Processed ${result.count} items.`);
+
+      this.logger.log('Phase 2: Starting detailed tour data synchronization...');
+      // 상세 정보 동기화 시, 업데이트 된(또는 새로 추가된) contentId 목록을 반환받음
+      const changedContentIds = (await this.tourSyncDetailService.sync()) ?? [];
+      this.logger.log(
+        `Phase 2: Detailed synchronization completed. (Updated ${changedContentIds.length} items)`,
+      );
+
+      this.logger.log('Phase 3: Starting landmark images synchronization...');
+      // 변경된 항목들은 강제로 이미지도 다시 동기화
+      await this.tourSyncImageService.sync(changedContentIds);
+      this.logger.log('Phase 3: Images synchronization completed.');
+
+      this.logger.log('Phase 4: Starting landmark intro synchronization...');
+      // 변경된 항목들은 강제로 소개 정보도 다시 동기화
+      await this.tourSyncIntroService.sync(changedContentIds);
+      this.logger.log('Phase 4: Intro synchronization completed.');
+
+      return { success: true, message: 'Full synchronization completed', count: result.count };
     } catch (error) {
-      if (error instanceof Error) {
-        this.logger.error(`Weekly synchronization failed: ${error.message}`);
-      } else {
-        this.logger.error(`Weekly synchronization failed: ${String(error)}`);
-      }
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Synchronization failed: ${errorMessage}`);
+      throw new Error(`Synchronization failed: ${errorMessage}`);
     }
   }
 
-  async syncTourData(): Promise<SyncTourDataResponseDto> {
-    const baseUrl = this.configService.getOrThrow<string>('TOUR_API_URL');
-    const serviceKey = this.configService.getOrThrow<string>('TOUR_API_KEY');
-    const url = `${baseUrl}?serviceKey=${serviceKey}&MobileApp=AppTest&MobileOS=ETC&contentTypeId=12&areaCode=1&numOfRows=800&pageNo=1&_type=json`;
+  /**
+   * 한국관광공사 API에서 기본 관광지 목록을 가져와 DB에 저장
+   */
+  async syncTourData() {
+    return this.tourSyncListService.sync();
+  }
 
-    try {
-      this.logger.log('Fetching tour data from external API...');
-      const response = await firstValueFrom(this.httpService.get<TourApiResponse>(url));
-      const { data } = response;
+  /**
+   * 각 관광지의 상세 정보(개요, 홈페이지 등)를 동기화
+   */
+  async syncLandmarkDetails() {
+    return this.tourSyncDetailService.sync();
+  }
 
-      const items = data?.response?.body?.items?.item;
+  /**
+   * 각 관광지의 추가 이미지들을 동기화
+   */
+  async syncLandmarkImages() {
+    return this.tourSyncImageService.sync();
+  }
 
-      if (!items || !Array.isArray(items)) {
-        this.logger.error('Invalid data structure received');
-        return { success: false, message: 'No items found' };
-      }
+  /**
+   * 각 관광지의 소개 정보(영업시간, 휴무일 등)를 동기화
+   */
+  async syncLandmarkIntros() {
+    return this.tourSyncIntroService.sync();
+  }
 
-      this.logger.log(`Fetched ${items.length} items. Inserting into Supabase...`);
+  /**
+   * DB에 저장된 모든 관광지 목록 조회
+   */
+  async getLandmarks() {
+    const supabase = this.supabaseService.getClient() as unknown as SupabaseClient<Database>;
 
-      const supabase = this.supabaseService.getClient() as unknown as SupabaseClient<Database>;
+    const { data, error } = await supabase.from('landmark').select('*');
 
-      // Transform items to match your Supabase table schema
-      const records: LandmarkEntity[] = items.map((item: TourApiItem) => {
-        // Helper to formatting timestamp YYYYMMDDHHMMSS -> YYYY-MM-DD HH:MM:SS
-        const parseDate = (str: string) => {
-          if (!str || str.length !== 14) return null;
-          return `${str.slice(0, 4)}-${str.slice(4, 6)}-${str.slice(6, 8)} ${str.slice(8, 10)}:${str.slice(10, 12)}:${str.slice(12, 14)}`;
-        };
-
-        return {
-          contentid: parseInt(item.contentid, 10),
-          contenttypeid: parseInt(item.contenttypeid, 10),
-          title: item.title,
-          addr1: item.addr1,
-          addr2: item.addr2,
-          zipcode: item.zipcode,
-          tel: item.tel,
-          areacode: parseInt(item.areacode, 10),
-          sigungucode: parseInt(item.sigungucode, 10),
-          cat1: item.cat1,
-          cat2: item.cat2,
-          cat3: item.cat3,
-          mapx: parseFloat(item.mapx),
-          mapy: parseFloat(item.mapy),
-          mlevel: parseInt(item.mlevel, 10),
-          firstimage: item.firstimage,
-          firstimage2: item.firstimage2,
-          cpyrhtdivcd: item.cpyrhtDivCd,
-          createdtime: parseDate(item.createdtime),
-          modifiedtime: parseDate(item.modifiedtime),
-          ldongregncd: item.lDongRegnCd ? parseInt(item.lDongRegnCd, 10) : null,
-          ldongsigngucd: item.lDongSignguCd ? parseInt(item.lDongSignguCd, 10) : null,
-          lclssystm1: item.lclsSystm1 ?? null,
-          lclssystm2: item.lclsSystm2 ?? null,
-          lclssystm3: item.lclsSystm3 ?? null,
-        };
-      });
-
-      // Upsert data to avoid duplicates (assuming contentid is unique content)
-
-      const { error } = await supabase
-        .from('landmark')
-        .upsert(records, { onConflict: 'contentid' });
-
-      if (error) {
-        this.logger.error(`Supabase error: ${error.message}`);
-
-        throw new Error(error.message);
-      }
-
-      this.logger.log('Data successfully synced!');
-
-      return { success: true, count: records.length };
-    } catch (error) {
-      if (error instanceof Error) {
-        this.logger.error(`Error syncing tour data: ${error.message}`);
-      } else {
-        this.logger.error(`Error syncing tour data: ${String(error)}`);
-      }
-      throw error;
+    if (error) {
+      this.logger.error(`Error fetching landmarks: ${error.message}`);
+      throw new Error(error.message);
     }
+
+    return data;
   }
 }
