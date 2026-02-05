@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 
 import { SupabaseService } from '../../supabase/supabase.service';
+import { extractErrorMessage, logError } from '../../utils/error.util';
 import { LandmarkDetailEntity } from '../interfaces/landmark.interface';
 import { TourApiService } from '../tour-api.service';
 
@@ -31,9 +32,8 @@ export class TourSyncDetailService {
       .select('contentid, modifiedtime');
 
     if (listError || detailError) {
-      const message = `Error fetching data for change detection: ${listError?.message || detailError?.message}`;
-      this.logger.error(message);
-      throw new Error(message);
+      logError(this.logger, 'Error fetching data for change detection', listError || detailError);
+      throw new Error(extractErrorMessage(listError || detailError));
     }
 
     const detailMap = new Map(allDetails?.map((d) => [d.contentid, d.modifiedtime]) || []);
@@ -111,7 +111,8 @@ export class TourSyncDetailService {
       .upsert(batch, { onConflict: 'contentid' });
 
     if (upsertError) {
-      this.logger.error(`Error upserting details: ${upsertError.message}`);
+      logError(this.logger, 'Error upserting details', upsertError);
+      throw new Error(extractErrorMessage(upsertError));
     }
   }
 }

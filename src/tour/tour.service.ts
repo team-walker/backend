@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
 import { SupabaseService } from '../supabase/supabase.service';
+import { extractErrorMessage, logError } from '../utils/error.util';
 import { TourSyncDetailService } from './services/tour-sync-detail.service';
 import { TourSyncImageService } from './services/tour-sync-image.service';
 import { TourSyncIntroService } from './services/tour-sync-intro.service';
@@ -56,9 +57,8 @@ export class TourService {
 
       return { success: true, message: 'Full synchronization completed', count: result.count };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      this.logger.error(`Synchronization failed: ${errorMessage}`);
-      throw new Error(`Synchronization failed: ${errorMessage}`);
+      logError(this.logger, 'Full synchronization failed', error);
+      throw new Error(`Synchronization failed: ${extractErrorMessage(error)}`);
     }
   }
 

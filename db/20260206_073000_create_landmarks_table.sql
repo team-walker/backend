@@ -73,7 +73,6 @@ CREATE TABLE public.landmark_image (
   constraint landmark_image_contentid_fk foreign KEY (contentid) references landmark (contentid) on delete CASCADE
 ) TABLESPACE pg_default;
 CREATE TABLE public.landmark_intro (
-  id integer NOT NULL DEFAULT nextval('landmark_intro_id_seq'::regclass),
   contentid bigint NOT NULL UNIQUE,
   contenttypeid integer NOT NULL,
   heritage1 boolean DEFAULT false,
@@ -91,6 +90,25 @@ CREATE TABLE public.landmark_intro (
   chkbabycarriage boolean DEFAULT false,
   chkpet boolean DEFAULT false,
   chkcreditcard boolean DEFAULT false,
-  CONSTRAINT landmark_intro_pkey PRIMARY KEY (id),
+  CONSTRAINT landmark_intro_pkey PRIMARY KEY (contentid),
   CONSTRAINT landmark_intro_contentid_fk FOREIGN KEY (contentid) REFERENCES public.landmark(contentid)
+);
+CREATE TABLE public.region_sigungu_map (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  area_code integer NOT NULL,
+  sigungu_code integer NOT NULL,
+  sigungu_name text NOT NULL,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  sido_name text NOT NULL DEFAULT ''::text,
+  CONSTRAINT region_sigungu_map_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.users (
+  id uuid NOT NULL,
+  email text,
+  nickname text,
+  avatar_url text,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT users_pkey PRIMARY KEY (id),
+  CONSTRAINT users_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
 );

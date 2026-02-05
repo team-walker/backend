@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 
 import { SupabaseService } from '../../supabase/supabase.service';
+import { extractErrorMessage, logError } from '../../utils/error.util';
 import { SyncTourDataResponseDto } from '../dto/sync-tour-data.dto';
 import { LandmarkEntity } from '../interfaces/landmark.interface';
 import { TourApiService } from '../tour-api.service';
@@ -38,7 +39,7 @@ export class TourSyncListService {
         .select('contentid, modifiedtime');
 
       if (fetchError) {
-        this.logger.error(`Error fetching existing landmarks: ${fetchError.message}`);
+        logError(this.logger, 'Error fetching existing landmarks', fetchError);
         // 에러 발생 시 안전하게 전체 upsert 진행하거나 에러 처리
       }
 
@@ -54,8 +55,14 @@ export class TourSyncListService {
         if (!existingModifiedTime) return true;
 
         // API의 modifiedtime이 DB의 것보다 최신인 경우
-        // (API 데이터 형식에 따라 문자열 비교 또는 Date 변환 비교)
-        return !!record.modifiedtime && record.modifiedtime > existingModifiedTime;
+        if (!record.modifiedtime) return false;
+
+        // 날짜 객체로 변환하여 밀리초 단위로 정확하게 비교
+        // (문자열 비교는 DB의 포맷과 Mapper의 포맷 차이로 인해 부정확할 수 있음)
+        const recordTime = new Date(record.modifiedtime).getTime();
+        const existingTime = new Date(existingModifiedTime).getTime();
+
+        return recordTime > existingTime;
       });
 
       if (toUpdate.length === 0) {
@@ -72,20 +79,16 @@ export class TourSyncListService {
         .upsert(toUpdate, { onConflict: 'contentid' });
 
       if (error) {
-        this.logger.error(`Supabase error: ${error.message}`);
-        throw new Error(error.message);
+        logError(this.logger, 'Supabase error during upsert', error);
+        throw new Error(extractErrorMessage(error));
       }
 
       this.logger.log(`Data successfully synced! (${toUpdate.length} items updated)`);
 
       return { success: true, count: toUpdate.length };
     } catch (error) {
-      if (error instanceof Error) {
-        this.logger.error(`Error syncing tour data: ${error.message}`);
-      } else {
-        this.logger.error(`Error syncing tour data: ${String(error)}`);
-      }
-      throw error;
+      logError(this.logger, 'Error syncing tour data', error);
+      throw new Error(extractErrorMessage(error));
     }
   }
 }

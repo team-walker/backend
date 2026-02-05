@@ -3,6 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 
+import { extractErrorMessage, logError } from '../utils/error.util';
 import { LandmarkDetailEntity, LandmarkEntity } from './interfaces/landmark.interface';
 import { LandmarkImageEntity } from './interfaces/landmark-image.interface';
 import { LandmarkIntroEntity } from './interfaces/landmark-intro.interface';
@@ -55,8 +56,8 @@ export class TourApiService {
 
       return allItems;
     } catch (e) {
-      this.logger.error(`Failed to fetch all tour items: ${String(e)}`);
-      throw e;
+      logError(this.logger, 'Failed to fetch all tour items', e);
+      throw new Error(extractErrorMessage(e));
     }
   }
 
@@ -103,8 +104,8 @@ export class TourApiService {
 
       return { items: entities, totalCount };
     } catch (e) {
-      this.logger.error(`Failed to fetch tour page ${pageNo}: ${String(e)}`);
-      throw e; // Rethrow error to stop sync process
+      logError(this.logger, `Failed to fetch tour page ${pageNo}`, e);
+      throw new Error(extractErrorMessage(e));
     }
   }
 
@@ -141,7 +142,7 @@ export class TourApiService {
 
       return LandmarkMapper.toLandmarkDetailEntity(item);
     } catch (e) {
-      this.logger.error(`Failed to fetch detail for contentid: ${contentId}: ${e}`);
+      logError(this.logger, `Failed to fetch detail for contentid: ${contentId}`, e);
       return null;
     }
   }
@@ -178,7 +179,7 @@ export class TourApiService {
 
       return items.map((item) => LandmarkMapper.toLandmarkImageEntity(item));
     } catch (e) {
-      this.logger.error(`Failed to fetch images for contentid: ${contentId}: ${e}`);
+      logError(this.logger, `Failed to fetch images for contentid: ${contentId}`, e);
       return [];
     }
   }
@@ -218,7 +219,7 @@ export class TourApiService {
 
       return LandmarkMapper.toLandmarkIntroEntity(item);
     } catch (e) {
-      this.logger.error(`Failed to fetch intro for contentid: ${contentId}: ${e}`);
+      logError(this.logger, `Failed to fetch intro for contentid: ${contentId}`, e);
       return null;
     }
   }

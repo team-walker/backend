@@ -7,6 +7,8 @@ import {
   TourApiIntroItem,
   TourApiItem,
 } from '../interfaces/tour-api-response.interface';
+import { parseBoolean } from './helpers/boolean.helper';
+import { parseTimestamp } from './helpers/timestamp.helper';
 
 export class LandmarkMapper {
   /**
@@ -32,8 +34,8 @@ export class LandmarkMapper {
       firstimage: item.firstimage,
       firstimage2: item.firstimage2,
       cpyrhtdivcd: item.cpyrhtDivCd,
-      createdtime: this.parseTimestamp(item.createdtime),
-      modifiedtime: this.parseTimestamp(item.modifiedtime),
+      createdtime: parseTimestamp(item.createdtime),
+      modifiedtime: parseTimestamp(item.modifiedtime),
       ldongregncd: item.lDongRegnCd ? parseInt(item.lDongRegnCd, 10) : null,
       ldongsigngucd: item.lDongSignguCd ? parseInt(item.lDongSignguCd, 10) : null,
       lclssystm1: item.lclsSystm1 ?? null,
@@ -65,8 +67,8 @@ export class LandmarkMapper {
       firstimage: item.firstimage,
       firstimage2: item.firstimage2,
       cpyrhtdivcd: item.cpyrhtDivCd,
-      createdtime: this.parseTimestamp(item.createdtime),
-      modifiedtime: this.parseTimestamp(item.modifiedtime),
+      createdtime: parseTimestamp(item.createdtime),
+      modifiedtime: parseTimestamp(item.modifiedtime),
       ldongregncd: item.lDongRegnCd ? parseInt(item.lDongRegnCd, 10) : null,
       ldongsigngucd: item.lDongSignguCd ? parseInt(item.lDongSignguCd, 10) : null,
       lclssystm1: item.lclsSystm1 ?? null,
@@ -110,29 +112,9 @@ export class LandmarkMapper {
       useseason: item.useseason,
       usetime: item.usetime,
       parking: item.parking,
-      chkbabycarriage: this.parseBoolean(item.chkbabycarriage),
-      chkpet: this.parseBoolean(item.chkpet),
-      chkcreditcard: this.parseBoolean(item.chkcreditcard),
+      chkbabycarriage: parseBoolean(item.chkbabycarriage),
+      chkpet: parseBoolean(item.chkpet),
+      chkcreditcard: parseBoolean(item.chkcreditcard),
     };
-  }
-
-  // --- Helpers ---
-
-  /**
-   * YYYYMMDDHHMMSS -> YYYY-MM-DD HH:MM:SS
-   */
-  private static parseTimestamp(str: string): string | null {
-    if (!str || str.length !== 14) return null;
-    return `${str.slice(0, 4)}-${str.slice(4, 6)}-${str.slice(6, 8)} ${str.slice(8, 10)}:${str.slice(10, 12)}:${str.slice(12, 14)}`;
-  }
-
-  /**
-   * String -> Boolean
-   */
-  private static parseBoolean(val: string): boolean {
-    if (!val) return false;
-    const s = val.trim();
-    if (s === '' || s === '0' || s === '없음' || s === '불가') return false;
-    return true;
   }
 }

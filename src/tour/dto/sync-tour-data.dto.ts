@@ -1,12 +1,10 @@
-import { ApiProperty } from '@nestjs/swagger';
-
 export class SyncTourDataResponseDto {
-  @ApiProperty({ description: 'Whether the synchronization was successful' })
+  // Whether the synchronization was successful
   success: boolean;
 
-  @ApiProperty({ description: 'Number of items synchronized', required: false })
+  // Number of items synchronized
   count?: number;
 
-  @ApiProperty({ description: 'Error message if failed', required: false })
+  // Error message if failed
   message?: string;
 }
