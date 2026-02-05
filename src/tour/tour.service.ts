@@ -16,26 +16,6 @@ import { TourSyncIntroService } from './services/tour-sync-intro.service';
 import { TourSyncListService } from './services/tour-sync-list.service';
 import { TourApiService } from './tour-api.service';
 
-const SIDO_AREA_CODE_MAP: Record<string, number> = {
-  '\uC11C\uC6B8\uD2B9\uBCC4\uC2DC': 1,
-  '\uC778\uCC9C\uAD11\uC5ED\uC2DC': 2,
-  '\uB300\uC804\uAD11\uC5ED\uC2DC': 3,
-  '\uB300\uAD6C\uAD11\uC5ED\uC2DC': 4,
-  '\uAD11\uC8FC\uAD11\uC5ED\uC2DC': 5,
-  '\uBD80\uC0B0\uAD11\uC5ED\uC2DC': 6,
-  '\uC6B8\uC0B0\uAD11\uC5ED\uC2DC': 7,
-  '\uC138\uC885\uD2B9\uBCC4\uC790\uCE58\uC2DC': 8,
-  '\uACBD\uAE30\uB3C4': 31,
-  '\uAC15\uC6D0\uD2B9\uBCC4\uC790\uCE58\uB3C4': 32,
-  '\uCDA9\uCCAD\uBD81\uB3C4': 33,
-  '\uCDA9\uCCAD\uB0A8\uB3C4': 34,
-  '\uACBD\uC0C1\uBD81\uB3C4': 35,
-  '\uACBD\uC0C1\uB0A8\uB3C4': 36,
-  '\uC804\uBD81\uD2B9\uBCC4\uC790\uCE58\uB3C4': 37,
-  '\uC804\uB77C\uB0A8\uB3C4': 38,
-  '\uC81C\uC8FC\uD2B9\uBCC4\uC790\uCE58\uB3C4': 39,
-};
-
 @Injectable()
 export class TourService {
   private readonly logger = new Logger(TourService.name);
@@ -182,37 +162,54 @@ export class TourService {
     const supabase = this.supabaseService.getClient() as unknown as SupabaseClient<Database>;
     let upsertCount = 0;
 
-    const targetSidoName = '\uC11C\uC6B8\uD2B9\uBCC4\uC2DC';
-    const targetAreaCode = SIDO_AREA_CODE_MAP[targetSidoName];
-    if (!targetAreaCode) {
-      throw new InternalServerErrorException('Target SIDO code is not configured');
-    }
-
-    const sigunguCodes = await this.tourApiService.fetchSigunguCodes(targetAreaCode);
-
-    if (sigunguCodes.length == 0) {
-      return { success: true, count: 0 };
-    }
-
-    const records = sigunguCodes.map((item: { code: string; name: string }) => ({
-      area_code: targetAreaCode,
-      sido_name: targetSidoName,
-      sigungu_code: Number.parseInt(item.code, 10),
-      sigungu_name: item.name,
-    }));
-
-    const { error } = await supabase
+    const { data: regions, error: regionsError } = await supabase
       .from('region_sigungu_map')
-      .upsert(records, { onConflict: 'area_code,sigungu_code' });
+      .select('area_code,sido_name');
 
-    if (error) {
-      this.logger.error(
-        `Error syncing region_sigungu_map (areaCode=${targetAreaCode}): ${error.message}`,
-      );
-      throw new InternalServerErrorException('Failed to sync region code map');
+    if (regionsError) {
+      this.logger.error(`Error reading region_sigungu_map: ${regionsError.message}`);
+      throw new InternalServerErrorException('Failed to read region code map');
     }
 
-    upsertCount += records.length;
+    if (!regions || regions.length === 0) {
+      throw new BadRequestException('region_sigungu_map is empty; seed area_code/sido_name first');
+    }
+
+    const uniqueRegions = new Map<string, number>();
+    for (const region of regions) {
+      if (!region?.sido_name || !region?.area_code) continue;
+      if (!uniqueRegions.has(region.sido_name)) {
+        uniqueRegions.set(region.sido_name, region.area_code);
+      }
+    }
+
+    for (const [sidoName, areaCode] of uniqueRegions.entries()) {
+      const sigunguCodes = await this.tourApiService.fetchSigunguCodes(areaCode);
+
+      if (sigunguCodes.length === 0) {
+        continue;
+      }
+
+      const records = sigunguCodes.map((item: { code: string; name: string }) => ({
+        area_code: areaCode,
+        sido_name: sidoName,
+        sigungu_code: Number.parseInt(item.code, 10),
+        sigungu_name: item.name,
+      }));
+
+      const { error } = await supabase
+        .from('region_sigungu_map')
+        .upsert(records, { onConflict: 'area_code,sigungu_code' });
+
+      if (error) {
+        this.logger.error(
+          `Error syncing region_sigungu_map (areaCode=${areaCode}): ${error.message}`,
+        );
+        throw new InternalServerErrorException('Failed to sync region code map');
+      }
+
+      upsertCount += records.length;
+    }
 
     return { success: true, count: upsertCount };
   }
@@ -223,12 +220,6 @@ export class TourService {
   ): Promise<Database['public']['Tables']['landmark']['Row'][]> {
     if (!sidoName || !sigunguName) {
       throw new BadRequestException('sido and sigugun are required');
-    }
-
-    const areaCode = SIDO_AREA_CODE_MAP[sidoName];
-
-    if (!areaCode) {
-      throw new BadRequestException(`Unsupported SIDO name: ${sidoName}`);
     }
 
     const supabase = this.supabaseService.getClient() as unknown as SupabaseClient<Database>;
