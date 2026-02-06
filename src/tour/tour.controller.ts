@@ -9,18 +9,18 @@ export class TourController {
   constructor(private readonly tourService: TourService) {}
 
   @Post('sync')
-  async syncTourData() {
-    return this.tourService.syncAllTourData();
+  async syncAllLandmarks() {
+    return this.tourService.syncAllLandmarkData();
   }
 
   @Post('sync/list')
-  async syncTourList() {
-    return this.tourService.syncTourData();
+  async syncLandmarkList() {
+    return this.tourService.syncLandmarkList();
   }
 
   @Post('sync/detail')
   @ApiResponse({ type: SyncTourDetailResponseDto })
-  async syncTourDetail(): Promise<SyncTourDetailResponseDto> {
+  async syncLandmarkDetail(): Promise<SyncTourDetailResponseDto> {
     const updatedIds = await this.tourService.syncLandmarkDetails();
     return {
       success: true,
@@ -32,7 +32,7 @@ export class TourController {
 
   @Post('sync/image')
   @ApiResponse({ type: SyncTourResponseDto })
-  async syncTourImage(): Promise<SyncTourResponseDto> {
+  async syncLandmarkImage(): Promise<SyncTourResponseDto> {
     await this.tourService.syncLandmarkImages();
     return {
       success: true,
@@ -42,7 +42,7 @@ export class TourController {
 
   @Post('sync/intro')
   @ApiResponse({ type: SyncTourResponseDto })
-  async syncTourIntro(): Promise<SyncTourResponseDto> {
+  async syncLandmarkIntro(): Promise<SyncTourResponseDto> {
     await this.tourService.syncLandmarkIntros();
     return {
       success: true,
@@ -51,7 +51,7 @@ export class TourController {
   }
 
   @Get()
-  async getTourData() {
+  async getLandmarks() {
     return this.tourService.getLandmarks();
   }
 }

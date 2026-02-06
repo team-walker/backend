@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 
 import { SupabaseService } from '../../supabase/supabase.service';
-import { extractErrorMessage, logError } from '../../utils/error.util';
+import { getErrorMessage, logErrorWithContext } from '../../utils/error.util';
 import { LandmarkDetailEntity } from '../interfaces/landmark.interface';
 import { TourApiService } from '../tour-api.service';
 
@@ -16,13 +16,9 @@ export class TourSyncDetailService {
     private readonly supabaseService: SupabaseService,
   ) {}
 
-  /**
-   * Phase 2: 관광지 상세 정보 동기화
-   */
-  async sync() {
+  async syncLandmarkDetails() {
     const supabase = this.supabaseService.getClient();
 
-    // 1. 기본 정보(landmark)와 상세 정보(landmark_detail)의 수정 시각 비교
     const { data: allLandmarks, error: listError } = await supabase
       .from('landmark')
       .select('contentid, modifiedtime');
@@ -32,17 +28,19 @@ export class TourSyncDetailService {
       .select('contentid, modifiedtime');
 
     if (listError || detailError) {
-      logError(this.logger, 'Error fetching data for change detection', listError || detailError);
-      throw new Error(extractErrorMessage(listError || detailError));
+      logErrorWithContext(
+        this.logger,
+        'Error fetching data for change detection',
+        listError || detailError,
+      );
+      throw new Error(getErrorMessage(listError || detailError));
     }
 
     const detailMap = new Map(allDetails?.map((d) => [d.contentid, d.modifiedtime]) || []);
 
-    // 대상 필터링: 상세 정보가 없거나, 기본 정보의 수정 시각이 더 최신인 경우
     const toSync = allLandmarks.filter((l) => {
       const detailModifiedTime = detailMap.get(l.contentid);
 
-      // 상세 정보가 원본 테이블(landmark)보다 오래되었거나 없는 경우 업데이트 대상
       if (!detailModifiedTime) {
         return true;
       }
@@ -64,7 +62,6 @@ export class TourSyncDetailService {
 
     this.logger.log(`Starting detailed sync for ${toSync.length} items...`);
 
-    // 2. 필터링된 대상만 순차적으로 프로세스 진행
     let currentBatch: LandmarkDetailEntity[] = [];
     let processedCount = 0;
     const processedIds: number[] = [];
@@ -111,8 +108,8 @@ export class TourSyncDetailService {
       .upsert(batch, { onConflict: 'contentid' });
 
     if (upsertError) {
-      logError(this.logger, 'Error upserting details', upsertError);
-      throw new Error(extractErrorMessage(upsertError));
+      logErrorWithContext(this.logger, 'Error upserting details', upsertError);
+      throw new Error(getErrorMessage(upsertError));
     }
   }
 }
