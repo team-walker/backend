@@ -16,14 +16,14 @@ export interface TourDetailApiResponse {
 }
 
 export interface TourDetailApiItem {
-  contentid: string; // "126128"
-  contenttypeid: string; // "12"
-  title: string; // "동촌유원지"
-  createdtime: string; // "20031105090000"
-  modifiedtime: string; // "20250425092225"
+  contentid: string;
+  contenttypeid: string;
+  title: string;
+  createdtime: string;
+  modifiedtime: string;
   tel: string;
   telname: string;
-  homepage: string; // HTML string containing URL
+  homepage: string;
   firstimage: string;
   firstimage2: string;
   cpyrhtDivCd: string;
