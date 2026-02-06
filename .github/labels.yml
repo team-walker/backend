@@ -43,6 +43,3 @@
 - name: 'ci'
   color: '006b75'
   description: '🎡 CI 설정 파일 수정'
-- name: 'init'
-  color: 'c5def5'
-  description: '🎉 프로젝트 초기 생성'
