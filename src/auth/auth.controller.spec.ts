@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { AuthController } from './auth.controller';
-import { AuthGuard } from './auth.guard';
+import { AuthService } from './auth.service';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -9,12 +9,14 @@ describe('AuthController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
-    })
-      .overrideGuard(AuthGuard)
-      .useValue({
-        canActivate: jest.fn(() => true),
-      })
-      .compile();
+      providers: [
+        {
+          // 실제 AuthService 대신 가짜를 사용함
+          provide: AuthService,
+          useValue: {},
+        },
+      ],
+    }).compile();
 
     controller = module.get<AuthController>(AuthController);
   });
