@@ -6,7 +6,7 @@ overrides:
 dependencies:
   '@nestjs/axios':
     specifier: ^4.0.1
-    version: 4.0.1(@nestjs/common@11.1.12)(axios@1.7.2)(rxjs@7.8.2)
+    version: 4.0.1(@nestjs/common@11.1.12)(axios@1.13.4)(rxjs@7.8.2)
   '@nestjs/common':
     specifier: ^11.1.12
     version: 11.1.12(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -1425,7 +1425,7 @@ packages:
     dev: true
     optional: true
 
-  /@nestjs/axios@4.0.1(@nestjs/common@11.1.12)(axios@1.7.2)(rxjs@7.8.2):
+  /@nestjs/axios@4.0.1(@nestjs/common@11.1.12)(axios@1.13.4)(rxjs@7.8.2):
     resolution: {integrity: sha512-68pFJgu+/AZbWkGu65Z3r55bTsCPlgyKaV4BSG8yUAD72q1PPuyVRgUwFv6BxdnibTUHlyxm06FmYWNC+bjN7A==}
     peerDependencies:
       '@nestjs/common': ^10.0.0 || ^11.0.0
@@ -1433,7 +1433,7 @@ packages:
       rxjs: ^7.0.0
     dependencies:
       '@nestjs/common': 11.1.12(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      axios: 1.7.2
+      axios: 1.13.4
       rxjs: 7.8.2
     dev: false
 
@@ -2586,8 +2586,8 @@ packages:
   /asynckit@0.4.0:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
 
-  /axios@1.7.2:
-    resolution: {integrity: sha512-2A8QhOMrbomlDuiLeK9XibIBzuHeRcqqNOHp0Cyp5EoJ1IFDh+XZH3A6BkXtv0K4gFGCI0Y4BM7B1wOEi0Rmgw==}
+  /axios@1.13.4:
+    resolution: {integrity: sha512-1wVkUaAO6WyaYtCkcYCOx12ZgpGf9Zif+qXa4n+oYzK558YryKqiL6UWwd5DqiH3VRW0GYhTZQ/vlgJrCoNQlg==}
     dependencies:
       follow-redirects: 1.15.11
       form-data: 4.0.5
