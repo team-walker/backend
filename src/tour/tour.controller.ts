@@ -1,5 +1,10 @@
 import { Controller, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiNotFoundResponse, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiExcludeEndpoint,
+  ApiNotFoundResponse,
+  ApiResponse,
+} from '@nestjs/swagger';
 
 import { LandmarkDto } from './dto/landmark.dto';
 import { LandmarkDetailResponseDto } from './dto/landmark-detail-response.dto';
@@ -11,17 +16,19 @@ export class TourController {
   constructor(private readonly tourService: TourService) {}
 
   @Post('sync')
+  @ApiExcludeEndpoint()
   async syncAllLandmarks() {
     return this.tourService.syncAllLandmarkData();
   }
 
   @Post('sync/list')
+  @ApiExcludeEndpoint()
   async syncLandmarkList() {
     return this.tourService.syncLandmarkList();
   }
 
   @Post('sync/detail')
-  @ApiResponse({ type: SyncTourDetailResponseDto })
+  @ApiExcludeEndpoint()
   async syncLandmarkDetail(): Promise<SyncTourDetailResponseDto> {
     const updatedIds = await this.tourService.syncLandmarkDetails();
     return {
@@ -33,7 +40,7 @@ export class TourController {
   }
 
   @Post('sync/image')
-  @ApiResponse({ type: SyncTourResponseDto })
+  @ApiExcludeEndpoint()
   async syncLandmarkImage(): Promise<SyncTourResponseDto> {
     await this.tourService.syncLandmarkImages();
     return {
@@ -43,7 +50,7 @@ export class TourController {
   }
 
   @Post('sync/intro')
-  @ApiResponse({ type: SyncTourResponseDto })
+  @ApiExcludeEndpoint()
   async syncLandmarkIntro(): Promise<SyncTourResponseDto> {
     await this.tourService.syncLandmarkIntros();
     return {
@@ -53,6 +60,7 @@ export class TourController {
   }
 
   @Post('sync/region-map')
+  @ApiExcludeEndpoint()
   async syncRegionMap() {
     return await this.tourService.syncRegionSigunguMap();
   }
