@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { PostgrestError } from '@supabase/supabase-js';
 
 import { SupabaseService } from '../supabase/supabase.service';
 import { TourSyncDetailService } from './services/tour-sync-detail.service';
@@ -13,7 +14,7 @@ import { TourSyncListService } from './services/tour-sync-list.service';
 import { TourService } from './tour.service';
 import { TourApiService } from './tour-api.service';
 
-type SupabaseResult = { data: any; error: any };
+type SupabaseResult<T = unknown> = { data: T | null; error: PostgrestError | null };
 
 function createSupabaseMock(
   results: Record<string, { order?: SupabaseResult; maybeSingle?: SupabaseResult }>,
@@ -21,10 +22,10 @@ function createSupabaseMock(
   return {
     from: jest.fn((table: string) => {
       interface SupabaseQueryBuilder {
-        select: jest.Mock<SupabaseQueryBuilder, any[]>;
-        eq: jest.Mock<SupabaseQueryBuilder, any[]>;
-        order: jest.Mock<Promise<SupabaseResult>, any[]>;
-        maybeSingle: jest.Mock<Promise<SupabaseResult>, any[]>;
+        select: jest.Mock<SupabaseQueryBuilder, unknown[]>;
+        eq: jest.Mock<SupabaseQueryBuilder, unknown[]>;
+        order: jest.Mock<Promise<SupabaseResult>, unknown[]>;
+        maybeSingle: jest.Mock<Promise<SupabaseResult>, unknown[]>;
       }
 
       const builder: SupabaseQueryBuilder = {
@@ -129,7 +130,10 @@ describe('TourService', () => {
           maybeSingle: { data: { contentid: 100 }, error: null },
         },
         landmark_image: {
-          order: { data: null, error: new Error('boom') },
+          order: {
+            data: null,
+            error: { message: 'boom', details: '', hint: '', code: '' } as PostgrestError,
+          },
         },
         landmark_intro: {
           maybeSingle: { data: null, error: null },
