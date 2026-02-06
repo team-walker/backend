@@ -36,30 +36,24 @@ export class TourService {
 
   async syncAllLandmarkData() {
     this.logger.log('Starting full tour data synchronization...');
-    try {
-      const result = await this.syncLandmarkList();
-      this.logger.log(`Phase 1: List synchronization completed. Processed ${result.count} items.`);
+    const result = await this.syncLandmarkList();
+    this.logger.log(`Phase 1: List synchronization completed. Processed ${result.count} items.`);
 
-      this.logger.log('Phase 2: Starting detailed tour data synchronization...');
-      const changedContentIds = (await this.syncLandmarkDetails()) ?? [];
-      this.logger.log(
-        `Phase 2: Detailed synchronization completed. (Updated ${changedContentIds.length} items)`,
-      );
+    this.logger.log('Phase 2: Starting detailed tour data synchronization...');
+    const changedContentIds = (await this.syncLandmarkDetails()) ?? [];
+    this.logger.log(
+      `Phase 2: Detailed synchronization completed. (Updated ${changedContentIds.length} items)`,
+    );
 
-      this.logger.log('Phase 3: Starting landmark images synchronization...');
-      await this.syncLandmarkImages(changedContentIds);
-      this.logger.log('Phase 3: Images synchronization completed.');
+    this.logger.log('Phase 3: Starting landmark images synchronization...');
+    await this.syncLandmarkImages(changedContentIds);
+    this.logger.log('Phase 3: Images synchronization completed.');
 
-      this.logger.log('Phase 4: Starting landmark intro synchronization...');
-      await this.syncLandmarkIntros(changedContentIds);
-      this.logger.log('Phase 4: Intro synchronization completed.');
+    this.logger.log('Phase 4: Starting landmark intro synchronization...');
+    await this.syncLandmarkIntros(changedContentIds);
+    this.logger.log('Phase 4: Intro synchronization completed.');
 
-      return { success: true, message: 'Full synchronization completed', count: result.count };
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      this.logger.error(`Synchronization failed: ${errorMessage}`);
-      throw new Error(`Synchronization failed: ${errorMessage}`);
-    }
+    return { success: true, message: 'Full synchronization completed', count: result.count };
   }
 
   async syncLandmarkList() {
