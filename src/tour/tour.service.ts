@@ -199,7 +199,7 @@ export class TourService {
 
     const supabase = this.supabaseService.getClient() as unknown as SupabaseClient<Database>;
 
-    let { data: mapped, error: mappingError } = await supabase
+    const { data: mapped, error: mappingError } = await supabase
       .from('region_sigungu_map')
       .select('area_code,sigungu_code')
       .eq('sido_name', sidoName)
@@ -212,25 +212,9 @@ export class TourService {
     }
 
     if (!mapped) {
-      await this.syncRegionSigunguMap();
-      const retry = await supabase
-        .from('region_sigungu_map')
-        .select('area_code,sigungu_code')
-        .eq('sido_name', sidoName)
-        .eq('sigungu_name', sigunguName)
-        .maybeSingle();
-
-      mapped = retry.data;
-      mappingError = retry.error;
-    }
-
-    if (mappingError) {
-      this.logger.error(`Error reading region_sigungu_map after sync: ${mappingError.message}`);
-      throw new InternalServerErrorException('Failed to resolve region code');
-    }
-
-    if (!mapped) {
-      throw new NotFoundException('No region mapping found for the provided SIDO/SIGUGUN');
+      throw new NotFoundException(
+        'No region mapping found for the provided SIDO/SIGUGUN. Sync runs in background.',
+      );
     }
 
     const { data: landmarks, error } = await supabase
