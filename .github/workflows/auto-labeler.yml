@@ -1,8 +1,9 @@
 name: Auto Labeler
 
 on:
-  pull_request: # 테스트를 위해 pull_request_target 대신 pull_request 사용
-    types: [opened, reopened, edited, synchronize]
+  pull_request:
+    types: [opened, reopened, edited]
+
 
 jobs:
   label:
@@ -30,7 +31,6 @@ jobs:
               'design': /^design:|^design\(/,
               'perf': /^perf:|^perf\(/,
               'ci': /^ci:|^ci\(/,
-              'init': /^init:|^init\(/,
             };
 
             for (const [label, regex] of Object.entries(rules)) {
