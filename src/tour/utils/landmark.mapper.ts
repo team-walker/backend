@@ -7,6 +7,7 @@ import {
   TourApiIntroItem,
   TourApiItem,
 } from '../interfaces/tour-api-response.interface';
+import { parseStringToBoolean } from './helpers/boolean.helper';
 import { parseToSafeFloat, parseToSafeInteger } from './helpers/number.helper';
 import { formatApiTimestamp } from './helpers/timestamp.helper';
 
@@ -104,16 +105,9 @@ export class LandmarkMapper {
       useseason: item.useseason,
       usetime: item.usetime,
       parking: item.parking,
-      chkbabycarriage: this.parseBoolean(item.chkbabycarriage),
-      chkpet: this.parseBoolean(item.chkpet),
-      chkcreditcard: this.parseBoolean(item.chkcreditcard),
+      chkbabycarriage: parseStringToBoolean(item.chkbabycarriage),
+      chkpet: parseStringToBoolean(item.chkpet),
+      chkcreditcard: parseStringToBoolean(item.chkcreditcard),
     };
-  }
-
-  private static parseBoolean(val: string): boolean {
-    if (!val) return false;
-    const s = val.trim();
-    if (s === '' || s === '0' || s === '없음' || s === '불가') return false;
-    return true;
   }
 }
