@@ -1,8 +1,8 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
+import { setupSwagger } from './setup-swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -20,17 +20,7 @@ async function bootstrap() {
     credentials: true,
   });
 
-  const config = new DocumentBuilder()
-    .setTitle('API Documentation')
-    .setDescription('API description')
-    .setVersion('1.0.0')
-    .addBearerAuth()
-    .build();
-
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, documentFactory, {
-    jsonDocumentUrl: 'docs/json',
-  });
+  setupSwagger(app);
 
   const port = process.env.PORT ?? 3001;
   await app.listen(port);
