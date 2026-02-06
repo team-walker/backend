@@ -7,7 +7,7 @@
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat&logo=github-actions&logoColor=white)
 ![Husky](https://img.shields.io/badge/Husky-Git_Hooks-brown?style=flat&logo=git&logoColor=white)
 
-> 프로젝트의 백엔드 리포지토리입니다.
+> Walkavel 프로젝트의 백엔드 리포지토리입니다.
 
 ## 📑 목차
 
@@ -27,22 +27,28 @@
 
 ## 🛠 기술 스택
 
-| Category                 | Technology                     |
-| ------------------------ | ------------------------------ |
-| **Framework**            | NestJS 11                      |
-| **Language**             | TypeScript                     |
-| **API Documentation**    | Swagger (OpenAPI)              |
-| **Package Manager**      | pnpm                           |
-| **Linting & Formatting** | ESLint, Prettier               |
-| **Git Hooks**            | Husky, Commitlint, lint-staged |
+| Category                 | Technology                         |
+| ------------------------ | ---------------------------------- |
+| **Framework**            | NestJS 11                          |
+| **Language**             | TypeScript                         |
+| **API Documentation**    | Swagger (OpenAPI)                  |
+| **Package Manager**      | pnpm                               |
+| **Linting & Formatting** | ESLint, Prettier                   |
+| **Validation**           | class-validator, class-transformer |
+| **Git Hooks**            | Husky, Commitlint, lint-staged     |
 
 ## 📂 프로젝트 구조
 
 ```bash
-├── .github/          # Github Actions & Templates
+├── .github/          # GitHub Actions, PR/Issue Templates
 ├── src/              # Application source code
+│   ├── auth/         # 인증 관련 (Guards, Controllers, Services)
+│   ├── tour/         # 여행 데이터 관련 (Landmark API, Sync 로직)
+│   ├── supabase/     # Supabase 연동 및 설정
+│   ├── utils/        # 공통 유틸리티 (Error handling 등)
 │   ├── main.ts       # Entry point
-│   ├── app.module.ts # Core module
+│   ├── setup-swagger.ts # Swagger API 문서 설정
+│   ├── app.module.ts # Root module
 │   └── ...
 ├── test/             # E2E tests
 └── ...
@@ -79,7 +85,7 @@ pnpm start # or pnpm start:dev
 pnpm test
 ```
 
-API 문서는 [http://localhost:3000/docs](http://localhost:3000/docs)에서 확인하세요.
+API 문서는 [http://localhost:3001/docs](http://localhost:3001/docs)에서 확인하세요.
 
 ---
 
@@ -157,7 +163,6 @@ type: subject
 | `chore`    | 빌드 업무, 패키지 매니저 설정 등               | `chore: update dependencies`               |
 | `perf`     | 성능 개선                                      | `perf: optimize database queries`          |
 | `ci`       | CI 구성 파일 및 스크립트 변경                  | `ci: update github actions workflow`       |
-| `init`     | 프로젝트 초기 생성                             | `init: create project structure`           |
 | `revert`   | 커밋 되돌리기                                  | `revert: undo previous commit`             |
 
 ### 커밋 단위 (Atomic Commit)
@@ -165,7 +170,7 @@ type: subject
 ✅ **DO**
 
 - 하나의 커밋은 **하나의 변경 사항**만 포함
-- 작은 단위로 자주 커밋
+- **작은 단위로 자주 커밋**
 - 각 커밋이 독립적으로 동작 가능하도록
 
 ❌ **DON'T**
