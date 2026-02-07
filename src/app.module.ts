@@ -5,6 +5,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { BookmarkModule } from './bookmark/bookmark.module';
 import { SupabaseModule } from './supabase/supabase.module';
 import { TourModule } from './tour/tour.module';
 
@@ -18,6 +19,7 @@ import { TourModule } from './tour/tour.module';
     SupabaseModule,
     TourModule,
     AuthModule,
+    BookmarkModule,
   ],
   controllers: [AppController],
   providers: [AppService],

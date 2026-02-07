@@ -3,6 +3,42 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export interface Database {
   public: {
     Tables: {
+      bookmark: {
+        Row: {
+          id: number;
+          user_id: string;
+          content_id: number;
+          created_at: string | null;
+        };
+        Insert: {
+          id?: number;
+          user_id: string;
+          content_id: number;
+          created_at?: string | null;
+        };
+        Update: {
+          id?: number;
+          user_id?: string;
+          content_id?: number;
+          created_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'bookmarks_landmark_fk';
+            columns: ['content_id'];
+            isOneToOne: false;
+            referencedRelation: 'landmark';
+            referencedColumns: ['contentid'];
+          },
+          {
+            foreignKeyName: 'bookmarks_user_fk';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       landmark: {
         Row: {
           contentid: number;
